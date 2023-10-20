@@ -6,7 +6,7 @@ const getSimilarColor = require("get-similar-color").default;
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("color");
-  if (!id) return Response.json({ error: "NO Color provided!" });
+  if (!id) return Response.json({ data: [], error: "NO Color provided!" });
 
   const page = await fetch("https://sinauniforms.com/all-color-list/");
   const page_text = await page.text();
@@ -17,16 +17,18 @@ export async function GET(request) {
     // min :0.01 max: 1 not required default 0.8
     similarityThreshold: 0.5,
   });
+
   if (!findColor) {
-    return Response.json({ error: "NO COLOR FIND!" });
+    return Response.json({ data: [], error: "NO COLOR FIND!" });
   }
   const result = defaultColorArray.filter(
     (tempColor) => tempColor.hex == findColor.hex
   );
+
   if (!result) {
-    return Response.json({ error: "NO COLOR FIND!" });
+    return Response.json({ data: [], error: "NO COLOR FIND!" });
   }
-  return Response.json({ data: result });
+  return Response.json({ data: result, error: null });
 }
 
 function HTML2Object(page) {
